@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LogReaderConfig topMetricNode="LogReader">
+  <!-- =================================================================== -->
+  <!-- EPA LOGREADER                                                       -->
+  <!-- =================================================================== -->
+  <!-- 
+  This is a sample config file for the EPA LogReader framework, a CA Wily Field Pack
+  to be used in conjunction with the Introscope EPAgent.
+
+  For questions or enhancement requests contact Jeff Morris (jeff.morris@ca.com)
+
+  A LogReader config file can contain one or more <LogReader> elements that
+  define the basic characteristics LogReader thread within the framework
+
+  The attributes of the LogReader tags are as follows:
+
+     type - The LogReader type.  This can be one of the pre-defined types or a
+            custom type. (required)
+            
+       The Predefined types are: 
+
+       "ColumnData" - a basic log reader for logs that contain columnar data where
+           each column in the log file represents a separate metric.  An example
+           of this type would be the output from the vmstat command (See sample below)
+
+       "SimpleMatchCount" - a basic log reader for logs that contain rows of data 
+           where you want to match and count the number of rows that contain certain
+           specific text strings.  Multiple text strings and associated metrics
+           can be defined.  An example of this would be an error log file where 
+           you wanted to count the number of occurrences of "java.io.IOException"
+           and generate a metric called "IOException: Errors Per Interval"
+           to keep track of this (See sample below)
+
+	   "RegexMatchCount" - this is a more advanced version of the SimpleMatchCount
+           where the lines are matched using a regex pattern instead of a simple
+           string match and also the metric names can be dynamically generated
+           by using parts of the regex pattern in the metric name.  The example
+           below uses a common use case of this where the error code in the line
+           can be variable and the LogReader can automatically generate different
+           metrics separating by error code
+
+       "HashColumn" - this is a special mixed case of a row-based and column-based
+           log file where each row essentially contains name value pairs or "hashes".
+           One column contains strings representing metric names and a separate column
+           contains values.
+
+       "custom" - This allows for custom log readers.  The log reader is extensible
+           to the point that those familiar with Java may supply extension classes
+           that extend the ALogReader abstract class and implement the ILineProcessor
+           interface to decide how to parse individual lines from the log file
+           (Documented seperately)
+
+   sourceFile - This attribute specifies the path to the log file to process.  If the
+       value of sourceFile is "command" this indicates to use the command attribute
+       to run a shell command and use the output as the source for the logreader
+       (i.e. vmstat) (required)
+
+   command - If sourceFile="command", this attribute specifies the shell command to 
+       execute (optional)
+
+   metricNode - The metric node for data coming from this log reader (optional).  
+       The name of this node is appended to the 'topMetricNode' as defined in the 
+       LogReaderConfig XML element
+
+   class - This attribute is used when type="custom" to specify the classname
+       of the class to use for this LogReader.  This class must be loadable
+       using reflection and extend the ALogReader abstract class.
+
+  <ReaderParms>
+    Each LogReader can have multiple parameters speified as "ReaderParm" elements
+    Some are applicable to all LogReaders and some are specific based on the LogReader
+    type. 
+
+    startAtTop - Indicates whether to start processing at the top of the log file.  By
+        default if this parameter is not specified the log reader initially reads
+        to the end of the log file and waits for more rows to be added, processing them
+        as they arrive.  This parameter if specified and equal to "true" is designed
+        for testing and demo purposes only (Default = false)
+
+    lineDelay - This parameter is also designed for testing/demo purposes.  It represents
+        an integer number of seconds to pause between reading/processing each line
+        in the log file.  This is so on a demo or testing the log reader doesn't 
+        consume all of the data immediately.  (Default = 0)
+
+  -->
+
+  <!-- ======================================================== -->
+  <!-- ColumnData LogReader                                     -->
+  <!-- ======================================================== -->
+
+  <LogReader type="ColumnData" sourceFile="command" command="vmstat 2" metricNode="VMStat">
+    <ReaderParms>
+      <!-- 
+          splitchars - represents the characters used to delimit columns in the log file
+                       In this example the split characters are space and tab
+                       Tab character is represented in XML as &#9;
+      -->
+      <ReaderParm name="splitchars" value=" &#9;"/>
+	  <ReaderParm name="startAtTop" value="true"/>
+	  <ReaderParm name="linedelay" value="2"/>
+    </ReaderParms>
+
+    <!-----------
+    For a ColumnData log reader, each row is represented by one or more "column groups"
+    represented by the <ColumnGroup> XML attribute.  This attribute takes one parameter,
+    "metricNode" which is the metric node under which all metrics in this column group
+    will appear in the Investigator.  This construct allows categorization of different
+    data into groups 
+
+    Each <ColumnData> element defines one column in the log file.  Attributes are:
+
+       column - The column number.  First column is column 1
+
+       type - The metric type for this column.  Possible values are the same as for 
+              any EPAgent
+
+       metric - The metric name for this column
+    ------------>
+    <ColumnGroup metricNode="CPU">
+      <ColumnData column="11" type="IntAverage" metric="Interrupts Per Second"/>
+      <ColumnData column="12" type="IntAverage" metric="Context Switches Per Second"/>
+      <ColumnData column="13" type="IntAverage" metric="CPU User %"/> 
+      <ColumnData column="14" type="IntAverage" metric="CPU System %"/> 
+      <ColumnData column="15" type="IntAverage" metric="CPU Idle %"/> 
+      <ColumnData column="16" type="IntAverage" metric="IO Wait %"/> 
+    </ColumnGroup>
+    <ColumnGroup metricNode="Memory">
+      <ColumnData column="3" type="LongAverage" metric="Virtual Memory Used"/>
+      <ColumnData column="4" type="LongAverage" metric="Free"/>
+      <ColumnData column="5" type="LongAverage" metric="Buffers"/>
+      <ColumnData column="6" type="LongAverage" metric="Cache"/>
+      <ColumnData column="7" type="LongAverage" metric="Swapped In"/>
+      <ColumnData column="8" type="LongAverage" metric="Swapped Out"/>
+    </ColumnGroup>
+      <ColumnGroup metricNode="I/O">
+      <ColumnData column="9" type="IntAverage" metric="Blocks In"/>
+      <ColumnData column="10" type="IntAverage" metric="Blocks Out"/>
+    </ColumnGroup>
+  </LogReader>
+
+  <!-- ======================================================== -->
+  <!-- SimpleMatchCount LogReader                               -->
+  <!-- ======================================================== -->
+
+  <LogReader type="SimpleMatchCount" sourceFile="master_event.log"  metricNode="Errors">
+    
+    <!-- There are no special ReaderParms for the SimpleMatchCount LogReader
+         startAtTop and lineDelay are supported
+    -->
+
+    <!--------------------
+    A SimpleMachCount LogReader must have one <MatchList> element with one
+    or more <MatchItem> child elements
+
+    The are two attributes for each <MatchItem> element
+
+      pattern - The string to match.  This is an exact match against rows in 
+                the log file.  Each row that matches the pattern will add 1 
+                to the count
+
+      metric - The metric name to generate corresponding to the pattern
+               string.  Each metric is automatically of type PerIntervalCounter
+
+    ---------------->
+
+	<MatchList>
+	  <MatchItem pattern="ErrNo: 0" metric="Error 0 - Debug Msg"/>
+	  <MatchItem pattern="ErrNo: 19119" metric="Error 19119 - Tokenizer Failure"/>
+	  <MatchItem pattern="ErrNo: 15245" metric="Error 15245 - Missing PDF"/>
+	  <MatchItem pattern="ErrNo: 20611" metric="Error 20611 - Socket Error"/>
+	  <MatchItem pattern="ErrNo: 24803" metric="Error 24803 - XML Parse Error"/>
+	  <MatchItem pattern="ErrNo: 24804" metric="Error 24804 - Source Name Mismatch"/>
+	  <MatchItem pattern="ErrNo: 15209" metric="Error 15209"/>
+	  <MatchItem pattern="ErrNo: 29518" metric="Error 29518"/>
+	  <MatchItem pattern="ErrNo: 29511" metric="Error 29511"/>
+	  <MatchItem pattern="ErrNo: 4" metric="Error 4"/>
+	</MatchList>
+  </LogReader>
+
+  <!-- ======================================================== -->
+  <!-- RegexMatchCount LogReader                                -->
+  <!-- ======================================================== -->
+
+  <LogReader type="RegexMatchCount" sourceFile="master_event.log"  metricNode="Errors">
+
+    <!-- There are no special ReaderParms for the SimpleMatchCount LogReader
+         startAtTop and lineDelay are supported
+    -->
+
+    <!----------------------------
+    RegexMatchCount log reader also has one <MatchList> element with one or more
+    <MatchItem> children.  The difference is the syntax of the pattern and metric
+    attributes is a little more complex
+
+    pattern - This is the pattern to match and instead of being a simple match 
+              supports regular expressions.  Any row matching the regular expression
+              is counted
+
+    metric - The metric name.  In general this is simple text but it supports one special 
+             construct.  Each occurence of {n} in the metric name is replaced with
+             the value of "capturing group" n from the pattern (somewhat explained below
+             more detail in standard regular expression literature).  This allows
+             the metric name to be dynamic based on data from the matched string from 
+             the log file
+
+    valueGrp - This optional attribute, if specified, takes the value of the metric
+               from the pattern string using a capturing group instead of just counting
+               a match as 1.  This allows you to match rows with variable data
+    ------------------------------>
+
+	<MatchList>
+      <!---------------
+      The example below works like this:
+
+      In the pattern attribute, "\d" in regex means “match any digit”. 
+      The “+” sign means match one or more occurrences.
+
+      So, “\d+” means match a string of “one or more occurrences of a digit”.  
+      Therefore it will match “1”, “12”, “234”, “527”, etc.
+
+      The parentheses are a grouping symbol so that whatever is matched between the parentheses,
+      in this case the string of digits, becomes the group.
+
+      In the metric name {1} is replaced by "capturing group 1" which is whatever string is
+      matched between the first set of parentheses in the matched pattern string
+
+      So, for example if the log file line of text in a file like the following
+
+      Yada yada yada | ErrNo: 456 | more yada yada
+
+      this string matches the pattern, and (\d+) matches 456, so it counts as 1 
+
+      and creates the metric “Error 456 Per Interval count”
+      ------------->
+
+	  <MatchItem pattern=".*\| ErrNo: (\d+) \|.*" metric="Error {1} Per Interval Count"/>
+
+      <!----------------
+      This example uses the "valueGrp" attribute
+
+      It is designed to match rows in the log file similar to below
+
+      "Number of Active Sessions: 222"
+
+      In this case "Number of Active Sessions" occurs between the parentheses in the pattern
+      The metric specifier is simply {1} meaning the metric name becomes "Number of Active
+      Sessions"  
+
+      Then the second capturing group is (\d+) which represents variable numeric data,
+      in this case 222
+
+      So the metric value of 222 would be reported for the metric "Number of Active Sessions"
+      ----------------->
+
+	  <MatchItem pattern=".*(Number of Active Sessions): (\d+).*" metric="{1}" valueGrp="2"/>
+
+	</MatchList>
+  </LogReader>
+
+</LogReaderConfig>

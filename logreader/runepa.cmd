@@ -1,0 +1,1 @@
+java -cp logreader.jar;lib/epagent.jar;lib/jdom.jar com.wily.introscope.api.IntroscopeEPAgent

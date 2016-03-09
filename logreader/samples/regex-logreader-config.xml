@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LogReaderConfig topMetricNode="LogReader">
+  <LogReader type="RegexMatchCount" sourceFile="master_event.log"  metricNode="Errors">
+	<ReaderParms>
+	  <ReaderParm name="startAtTop" value="true"/>
+	  <ReaderParm name="linedelay" value="1"/>
+	</ReaderParms>
+
+	<MatchList>
+	  <MatchItem pattern=".*\| ErrNo: (\d+) \|.*" metric="Error {1} Per Interval Count"/>
+	</MatchList>
+  </LogReader>
+</LogReaderConfig>

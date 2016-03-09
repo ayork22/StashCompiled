@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LogReaderConfig topMetricNode="TIMMonitor">
+  <LogReader type="custom" class="com.wily.fieldext.epaplugins.logreader.tim.TIMStatsLogReader" sourceFile="/etc/wily/cem/tim/logs/protocolstats1" metricNode="TIMStats">
+    <ReaderParms>
+      <ReaderParm name="splitchars" value=" &#37;"/>
+    </ReaderParms>
+
+    <ColumnGroup metricNode="Packet Stats">
+      <ColumnData column="6" type="PerIntervalCounter" metric="Captured"/>
+      <ColumnData column="8" type="PerIntervalCounter" metric="Dropped"/>
+      <ColumnData column="10" type="PerIntervalCounter" metric="Analyzed"/>
+      <ColumnData column="13" type="PerIntervalCounter" metric="Bytes Analyzed"/>
+      <ColumnData column="15" type="LongAverage" metric="Throughput (Kbps)"/>
+    </ColumnGroup>
+    <ColumnGroup metricNode="Trans Stats">
+      <ColumnData column="30" type="IntCounter" metric="conns"/>
+      <ColumnData column="32" type="PerIntervalCounter" metric="Business Transactions"/>
+      <ColumnData column="34" type="PerIntervalCounter" metric="Transactions"/>
+      <ColumnData column="36" type="PerIntervalCounter" metric="Components"/>
+      <ColumnData column="38" type="IntAverage" metric="SSL Sessions"/>
+      <ColumnData column="40" type="IntAverage" metric="Login Sessions"/>
+      <ColumnData column="42" type="IntAverage" metric="Stats"/>
+    </ColumnGroup>
+    <ColumnGroup metricNode="System Stats">
+      <ColumnData column="18" type="IntAverage" metric="TIM Process"/>
+      <ColumnData column="20" type="IntAverage" metric="CPU 0"/>
+      <ColumnData column="22" type="IntAverage" metric="CPU 1"/>
+      <ColumnData column="24" type="IntAverage" metric="CPU 2"/>
+      <ColumnData column="26" type="IntAverage" metric="CPU 3"/>
+      <ColumnData column="28" type="IntAverage" metric="Memory (mb)"/>
+    </ColumnGroup>
+  </LogReader>
+  <LogReader type="ColumnData" sourceFile="command" command="vmstat 2" metricNode="VMStat">
+    <ColumnGroup metricNode="CPU">
+      <ColumnData column="11" type="IntAverage" metric="Interrupts Per Second"/>
+      <ColumnData column="12" type="IntAverage" metric="Context Switches Per Second"/>
+      <ColumnData column="13" type="IntAverage" metric="CPU User %"/> 
+      <ColumnData column="14" type="IntAverage" metric="CPU System %"/> 
+      <ColumnData column="15" type="IntAverage" metric="CPU Idle %"/> 
+      <ColumnData column="16" type="IntAverage" metric="IO Wait %"/> 
+    </ColumnGroup>
+    <ColumnGroup metricNode="Memory">
+      <ColumnData column="3" type="LongAverage" metric="Virtual Memory Used"/>
+      <ColumnData column="4" type="LongAverage" metric="Free"/>
+      <ColumnData column="5" type="LongAverage" metric="Buffers"/>
+      <ColumnData column="6" type="LongAverage" metric="Cache"/>
+      <ColumnData column="7" type="LongAverage" metric="Swapped In"/>
+      <ColumnData column="8" type="LongAverage" metric="Swapped Out"/>
+    </ColumnGroup>
+      <ColumnGroup metricNode="I/O">
+      <ColumnData column="9" type="IntAverage" metric="Blocks In"/>
+      <ColumnData column="10" type="IntAverage" metric="Blocks Out"/>
+    </ColumnGroup>
+  </LogReader>
+</LogReaderConfig>
+

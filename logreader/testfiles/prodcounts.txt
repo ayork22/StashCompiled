@@ -1,0 +1,7 @@
+NoProd: 1 
+Basic: 0 
+FFA: 0 
+Premier: 0 
+Deluxe: 996 
+HomeAndBiz: 0 
+LowEnd: 0

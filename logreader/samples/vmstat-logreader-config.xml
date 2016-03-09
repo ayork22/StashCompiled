@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LogReaderConfig topMetricNode="LogReader">
+  <LogReader type="ColumnData" sourceFile="command" command="vmstat 2" metricNode="VMStat">
+    <ColumnGroup metricNode="CPU">
+      <ColumnData column="11" type="IntAverage" metric="Interrupts Per Second"/>
+      <ColumnData column="12" type="IntAverage" metric="Context Switches Per Second"/>
+      <ColumnData column="13" type="IntAverage" metric="CPU User %"/> 
+      <ColumnData column="14" type="IntAverage" metric="CPU System %"/> 
+      <ColumnData column="15" type="IntAverage" metric="CPU Idle %"/> 
+      <ColumnData column="16" type="IntAverage" metric="IO Wait %"/> 
+    </ColumnGroup>
+    <ColumnGroup metricNode="Memory">
+      <ColumnData column="3" type="LongAverage" metric="Virtual Memory Used"/>
+      <ColumnData column="4" type="LongAverage" metric="Free"/>
+      <ColumnData column="5" type="LongAverage" metric="Buffers"/>
+      <ColumnData column="6" type="LongAverage" metric="Cache"/>
+      <ColumnData column="7" type="LongAverage" metric="Swapped In"/>
+      <ColumnData column="8" type="LongAverage" metric="Swapped Out"/>
+    </ColumnGroup>
+      <ColumnGroup metricNode="I/O">
+      <ColumnData column="9" type="IntAverage" metric="Blocks In"/>
+      <ColumnData column="10" type="IntAverage" metric="Blocks Out"/>
+    </ColumnGroup>
+  </LogReader>
+</LogReaderConfig>

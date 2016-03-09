@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LogReaderConfig topMetricNode="LogReader">
+  <LogReader type="HashColumn" sourceFile="rate_monitor.dat" metricNode="CTGRateMonitor">
+    <ReaderParms>
+      <ReaderParm name="splitchars" value="|"/>
+	  <ReaderParm name="startAtTop" value="true"/>
+	  <ReaderParm name="linedelay" value="1"/>
+	  <ReaderParm name="metricNameCol" value="3"/>
+	  <ReaderParm name="metricValueCol" value="2"/>
+    </ReaderParms>
+  </LogReader>
+</LogReaderConfig>

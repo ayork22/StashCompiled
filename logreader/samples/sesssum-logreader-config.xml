@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LogReaderConfig topMetricNode="LogReader">
+  <LogReader type="RegexMatchCount" sourceFile="sesssumm.out"  metricNode="SessionSummary">
+	<ReaderParms>
+	  <ReaderParm name="startAtTop" value="true"/>
+	  <ReaderParm name="linedelay" value="1"/>
+	</ReaderParms>
+
+	<MatchList>
+	  <MatchItem pattern=".*(Number of Active Sessions): (\d+).*" metric="{1}" valueGrp="2"/>
+	  <MatchItem pattern=".*(Number of Failed Sessions): (\d+).*" metric="{1}" valueGrp="2"/>
+	  <MatchItem pattern=".*(Number of Waiting Sessions): (\d+).*" metric="{1}" valueGrp="2"/>
+	  <MatchItem pattern=".*(Total Number of Sessions Since Engine Startup): (\d+).*" metric="{1}" valueGrp="2"/>
+	</MatchList>
+  </LogReader>
+</LogReaderConfig>

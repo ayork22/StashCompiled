@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LogReaderConfig topMetricNode="LogReader">
+  <LogReader type="ColumnData" sourceFile="c:/wily/customers/intuit/ctg_project/epalogreader/sessioncounts.log" metricNode="TTOSessionData">
+    <ReaderParms>
+      <ReaderParm name="splitchars" value=" &#9;"/>
+	  <ReaderParm name="startAtTop" value="true"/>
+	  <ReaderParm name="linedelay" value="2"/>
+    </ReaderParms>
+
+    <ColumnGroup metricNode="">
+      <ColumnData column="3" type="IntCounter" metric="Max Sessions"/>
+      <ColumnData column="4" type="IntCounter" metric="Idle Sessions"/>
+      <ColumnData column="5" type="IntCounter" metric="Active Sessions"/>
+    </ColumnGroup>
+  </LogReader>
+  <LogReader type="MatchCount" sourceFile="c:/wily/customers/intuit/ctg_project/epalogreader/tto_master_event.log"  metricNode="TTOErrors">
+	<ReaderParms>
+	  <ReaderParm name="startAtTop" value="true"/>
+	  <ReaderParm name="linedelay" value="1"/>
+	</ReaderParms>
+
+	<MatchList>
+	  <MatchItem pattern="ErrNo: 0" metric="Error 0 - Debug Msg"/>
+	  <MatchItem pattern="ErrNo: 19119" metric="Error 19119 - Tokenizer Failure"/>
+	  <MatchItem pattern="ErrNo: 15245" metric="Error 15245 - Missing PDF"/>
+	  <MatchItem pattern="ErrNo: 20611" metric="Error 20611 - Socket Error"/>
+	  <MatchItem pattern="ErrNo: 24803" metric="Error 24803 - XML Parse Error"/>
+	  <MatchItem pattern="ErrNo: 24804" metric="Error 24804 - Source Name Mismatch"/>
+	  <MatchItem pattern="ErrNo: 15209" metric="Error 15209"/>
+	  <MatchItem pattern="ErrNo: 29518" metric="Error 29518"/>
+	  <MatchItem pattern="ErrNo: 29511" metric="Error 29511"/>
+	  <MatchItem pattern="ErrNo: 4" metric="Error 4"/>
+	</MatchList>
+  </LogReader>
+</LogReaderConfig>
